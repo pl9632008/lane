@@ -14,6 +14,10 @@ public:
 
     ExtractOut extract_color_lanes(cv::Mat& img);
     cv::Mat get_img_mask(cv::Mat& img_1, cv::Mat& img_2);
+    std::map<std::string, std::string> readConfig();
+
+    std::string config_path = "/home/nvidia/customlane/config.txt";
+    
     //const cv::Size cam_size = cv::Size(1920, 1080);
     const cv::Size cam_size = cv::Size(1280, 720) ;
     const double sca_1 = 640.0 / cam_size.width;
@@ -21,13 +25,12 @@ public:
     const double mm_pre_x = 15.0 / 23.0 / sca_1;
     const double mm_pre_y = 15.0 / 23.0 / sca_1;
 
+    int stand_bar_x = 450;
+    //int stand_bar_x = 470;
+    int stand_bar_y = 360;
 
-    const int stand_bar_x = 450;
-    //constexpr int stand_bar_x = 470;
-    const int stand_bar_y = 270;
 
     cv::Point stand_bar_p = cv::Size(stand_bar_x, stand_bar_y);
-
 
 };
 

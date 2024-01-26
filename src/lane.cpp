@@ -381,8 +381,8 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
         double length = (stand_bar_x - p3.x) * mm_pre_x / 10;
 
 
-        cv::line(img_2, cv::Point(p1.x - pianyi, p1.y), cv::Point(p2.x - pianyi, p2.y), cv::Scalar(221, 160, 221), 3);
-        cv::line(img_2, cv::Point(p1.x + pianyi, p1.y), cv::Point(p2.x + pianyi, p2.y), cv::Scalar(221, 160, 221), 3);
+        cv::line(img_2, cv::Point(p1.x - pianyi, p1.y), cv::Point(p2.x - pianyi, p2.y), cv::Scalar(0, 255, 0), 3);
+        cv::line(img_2, cv::Point(p1.x + pianyi, p1.y), cv::Point(p2.x + pianyi, p2.y), cv::Scalar(0, 255, 0), 3);
 
         cv::circle(img_2, p3, 2, cv::Scalar(215, 45, 25), 8);
         cv::line(img_2, p3, stand_bar_p, cv::Scalar(0, 0, 255), 3);
@@ -444,8 +444,8 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
 
         double length = (stand_bar_x - p3.x) * mm_pre_x / 10;
 
-        cv::line(img_2, cv::Point(p2_1.x - pianyi, p1.y), cv::Point(X - pianyi, p2.y), cv::Scalar(135, 38, 87), 3);
-        cv::line(img_2, cv::Point(p2_1.x + pianyi, p1.y), cv::Point(X + pianyi, p2.y), cv::Scalar(135, 38, 87), 3);
+        cv::line(img_2, cv::Point(p2_1.x - pianyi, p1.y), cv::Point(X - pianyi, p2.y), cv::Scalar(0, 255, 0), 3);
+        cv::line(img_2, cv::Point(p2_1.x + pianyi, p1.y), cv::Point(X + pianyi, p2.y), cv::Scalar(0, 255, 0), 3);
 
         cv::circle(img_2, p4, 2, cv::Scalar(215, 45, 25), 8);
         cv::line(img_2, p4, stand_bar_p, cv::Scalar(0, 0, 255), 3);
@@ -462,3 +462,49 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
 
 
 };
+
+
+std::map<std::string, std::string> FindLane::readConfig(){
+
+    std::ifstream configFile(config_path); 
+    std::map<std::string, std::string> config_mp;
+    if (!configFile.is_open()) {
+        std::cerr << "Error opening the config file." << std::endl;
+        return config_mp;
+    }
+
+    
+    std::string line;
+    while (std::getline(configFile, line)) {
+        if (line.empty() || line[0] == '#' || line.find('=') == std::string::npos) {
+ 
+            continue;
+        }
+
+        size_t delimiterPos = line.find('=');
+        std::string key = line.substr(0, delimiterPos);
+        std::string value = line.substr(delimiterPos + 1);
+        
+
+        key.erase(0, key.find_first_not_of(" \t"));
+        key.erase(key.find_last_not_of(" \t") + 1);
+        value.erase(0, value.find_first_not_of(" \t"));
+        value.erase(value.find_last_not_of(" \t\r\n") + 1);
+
+        config_mp[key] = value;
+    }
+
+    for (const auto& entry : config_mp) {
+        std::cout << entry.first << "=" << entry.second << std::endl;
+    }
+
+    configFile.close(); // 关闭文件
+    stand_bar_x = std::stoi(config_mp["x"]);
+    stand_bar_y = std::stoi(config_mp["y"]);
+    stand_bar_p.x = stand_bar_x;
+    stand_bar_p.y = stand_bar_y;
+
+
+    return config_mp;
+
+}

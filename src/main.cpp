@@ -8,18 +8,12 @@ int main() {
 
     findlane.loadEngine(path);
     findlane.loadEngine_det(path_det);
+    auto mp = findlane.readConfig();
 
-    std::string rtsp_1 = "/home/nvidia/customlane/videos/test.mp4";
-    std::string rtsp_2 = "/home/nvidia/customlane/videos/456.mp4";
-    std::string rtsp_3 = "rtsp://admin:admin@192.168.1.170/0";
-    std::string rtsp_4 = "rtsp://admin:admin@192.168.1.150/0";
-    //std::string rtsp_3 = "G:/test_video/test.mp4";
-    //std::string rtsp_4 = "456.mp4";
-
-    cv::VideoCapture cap_11(rtsp_1);
-    cv::VideoCapture cap_22(rtsp_2);
-    cv::VideoCapture cap_33(rtsp_4);
-    cv::VideoCapture cap_44(rtsp_3);
+    cv::VideoCapture cap_11(mp["rtsp_1"]);
+    cv::VideoCapture cap_22(mp["rtsp_2"]);
+    cv::VideoCapture cap_33(mp["rtsp_3"]);
+    cv::VideoCapture cap_44(mp["rtsp_4"]);
 
     //int WIDTH_1 = cap_11.get(cv::CAP_PROP_FRAME_WIDTH);
     //int HEIGHT_1 = cap_11.get(cv::CAP_PROP_FRAME_HEIGHT);

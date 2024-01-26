@@ -45,7 +45,7 @@ public:
     GetFrame getFrame3();
     GetFrame getFrame4();
 
-  
+    
 private:
     std::shared_mutex mtx;
     int currentStream = 1;
