@@ -10,7 +10,7 @@ void CustomThread::set_num(int stm){
     currentStream = stm;
 }
 
-void CustomThread::SerialThread() {
+void CustomThread::SerialThread(serial::Serial& ser) {
     while (run_flag ) {
  
         uint8_t *serialData = new uint8_t[16];
@@ -47,23 +47,49 @@ void CustomThread::SerialThread() {
     }
 }
 
-void CustomThread::capToFrame1(cv::VideoCapture & cap_11) {
+void CustomThread::capToFrame1() {
+    cap_11.open(config_mp["rtsp_1"]);
+    std::atomic<int> cnt_1=0;
 
     while (run_flag){
         if (get_num() == 1) {
             cv::Mat img_1;
             cap_11 >> img_1;
+            if(img_1.empty()){
+                cnt_1++;
+                if(cnt_1>120){
+                    cap_11.release();
+                    cap_11.open(config_mp["rtsp_1"]);
+                    cnt_1=0;
+                }
+            }else{
+                cnt_1 =0;
+            }
             putFrame1Thread(img_1);
         }
     }
 }
 
-void CustomThread::capToFrame2(cv::VideoCapture & cap_22) {
+void CustomThread::capToFrame2() {
+    cap_22.open(std::stoi(config_mp["rtsp_2"]));
+    std::atomic<int> cnt_2=0;
 
     while (run_flag) {
         if (get_num() == 2) {
             cv::Mat img_2;
             cap_22 >> img_2;
+
+            if(img_2.empty()){
+                cnt_2++;
+                if(cnt_2>120){
+                    cap_22.release();
+                    cap_22.open(std::stoi(config_mp["rtsp_2"]));
+                    cnt_2=0;
+                }
+            }else{
+                cnt_2=0;
+            }
+
             putFrame2Thread(img_2);
         
         }
@@ -71,23 +97,48 @@ void CustomThread::capToFrame2(cv::VideoCapture & cap_22) {
     }
 }
 
-void CustomThread::capToFrame3(cv::VideoCapture & cap_33) {
+void CustomThread::capToFrame3() {
+    cap_33.open(config_mp["rtsp_3"]);
+    std::atomic<int> cnt_3=0;
     while (run_flag){
         if (get_num() == 3) {
             cv::Mat img_3;
             cap_33 >> img_3;
+
+            if(img_3.empty()){
+                cnt_3++;
+                if(cnt_3>120){
+                    cap_33.release();
+                    cap_33.open(config_mp["rtsp_3"]);
+                    cnt_3=0;
+                }
+            }else{
+                cnt_3=0;
+            }
             putFrame3Thread(img_3);
         }
   
     }
 }
 
-void CustomThread::capToFrame4(cv::VideoCapture & cap_44) {
-
+void CustomThread::capToFrame4() {
+    cap_44.open(config_mp["rtsp_4"]);
+    std::atomic<int> cnt_4=0;
     while (run_flag){
         if (get_num() == 3) {
             cv::Mat img_4;
             cap_44 >> img_4;
+
+            if(img_4.empty()){
+                cnt_4++;
+                if(cnt_4>120){
+                    cap_44.release();
+                    cap_44.open(config_mp["rtsp_4"]);
+                    cnt_4=0;
+                }
+            }else{
+                cnt_4=0;
+            }
             putFrame4Thread(img_4);
         
         }
@@ -210,6 +261,10 @@ void CustomThread::run(FindLane &findlane) {
    cv::namedWindow("Video Player", cv::WINDOW_NORMAL);
    cv::setWindowProperty("Video Player", cv::WND_PROP_FULLSCREEN, cv::WINDOW_FULLSCREEN);
    cv::resizeWindow("Video Player", cv::Size(window_width, window_height));
+   
+   if(config_mp["mode"]=="debug"){
+       saveimg_flag = true;
+   }
 
     while (true) {
     
@@ -226,11 +281,12 @@ void CustomThread::run(FindLane &findlane) {
             if (getframe1.have_frame == false) {
                 cv::Mat m = cv::Mat::zeros(window_height, window_width, CV_8UC3);
                 std::string text = "Please check camera 1!";
-                cv::putText(m, text, cv::Point(120, window_height/2), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 0, 255));
+                cv::putText(m, text, cv::Point(120, window_height/2), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(255, 255, 255),3);
                 cv::imshow("Video Player", m);
                 continue;
             }
             ans = findlane.doInference_det(getframe1.frame);
+
     
         }
 
@@ -240,11 +296,12 @@ void CustomThread::run(FindLane &findlane) {
             if (getframe2.have_frame == false) {
                 cv::Mat m = cv::Mat::zeros(window_height, window_width, CV_8UC3);
                 std::string text = "Please check camera 2!";
-                cv::putText(m, text, cv::Point(120, window_height / 2), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 0, 255));
+                cv::putText(m, text, cv::Point(120, window_height / 2), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(255, 255, 255),3);
                 cv::imshow("Video Player", m);
                 continue;
             }
             ans = getframe2.frame;
+
             
 
         }
@@ -255,11 +312,16 @@ void CustomThread::run(FindLane &findlane) {
             if (getframe3.have_frame == false || getframe4.have_frame == false) {
                 cv::Mat m = cv::Mat::zeros(window_height, window_width, CV_8UC3);
                 std::string text = "Please check camera 3 and 4!";
-                cv::putText(m, text, cv::Point(120, window_height / 2), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 0, 255));
+                cv::putText(m, text, cv::Point(120, window_height / 2), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(255, 255, 255),3);
                 cv::imshow("Video Player", m);
                 continue;
             }
+
             ans = findlane.get_img_mask(getframe3.frame, getframe4.frame);
+            
+            if(saveimg_flag){
+                cv::imwrite("/home/nvidia/customlane/camera34.jpg",ans);
+            }
 
         }
         cv::resize(ans, ans, cv::Size(window_width, window_height));

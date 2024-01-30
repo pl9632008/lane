@@ -6,7 +6,7 @@ ExtractOut FindLane::extract_color_lanes(cv::Mat& img) {
     ExtractOut extractout;
     auto res = doInference(img);
 
-    int differ = 30;
+    int differ = 10;
     for (int row = 0; row < res.rows; row++) {
         for (int col = 0; col < res.cols; col++) {
             if (col >= stand_bar_x + differ) {
@@ -158,20 +158,16 @@ ExtractOut FindLane::extract_color_lanes(cv::Mat& img) {
 
 cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
 
-
-
     cv::resize(img_1, img_1, cv::Size(), sca_1, sca_1, cv::INTER_LINEAR);
     cv::resize(img_2, img_2, cv::Size(), sca_2, sca_2, cv::INTER_LINEAR);
     cv::resize(img_2, img_2, img_1.size());
-
-
 
     cv::Mat ans = cv::Mat(img_1.rows + img_2.rows, img_1.cols, CV_8UC3, cv::Scalar(0, 0, 0));
     ExtractOut extract_1 = extract_color_lanes(img_1);
     ExtractOut extract_2 = extract_color_lanes(img_2);
 
-    auto pianyi = static_cast<int>(20 / mm_pre_x);
-
+    auto pianyi = static_cast<int>(2.0 / mm_pre_x);
+    
     bool flag = false;
     bool rotated_flag = false;
     int img_1_col = 0;
@@ -238,15 +234,11 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
 
         int y_dis = p2_top.x - p1_bottom.x;
 
-
-
         int len = abs(X - p2_bottom.x) + 2;
 
         //std::cout << "y_dis = " << y_dis << std::endl;
         //std::cout << "len = "<<len << std::endl;
         //std::cout << "diff_angle = " << diff_angle << std::endl;
-
-
 
         if ((0 < p1_bottom.x && p1_bottom.x < img_1.rows) && (p1_bottom.y == img_1.rows - 1) && (0 < p2_top.x && p2_top.x < img_2.rows) && (p2_top.y == 0)) {
 
@@ -312,13 +304,7 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
                 }
             }
 
-
-
         }
-
-
-
-
     }
 
     cv::line(img_1, cv::Point(stand_bar_x, 0), cv::Point(stand_bar_x, img_1.rows - 1), cv::Scalar(255, 0, 0), 3);
@@ -349,7 +335,8 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
             p3.y = stand_bar_y;
 
         }
-        double length = (stand_bar_x - p3.x) * mm_pre_x / 10;
+  
+        double length = (stand_bar_x - p3.x) * mm_pre_x ;
 
 
         cv::line(img_1, cv::Point(p1.x - pianyi, p1.y), cv::Point(p2.x - pianyi, p2.y), cv::Scalar(0, 255, 0), 3);
@@ -359,7 +346,7 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
         cv::circle(img_1, p3, 2, cv::Scalar(215, 45, 25), 8);
         cv::line(img_1, p3, stand_bar_p, cv::Scalar(0, 0, 255), 3);
 
-        cv::putText(img_1, cv::format("%.2f cm", length), cv::Point(500, stand_bar_y), cv::FONT_HERSHEY_COMPLEX, 2, cv::Scalar(0, 0, 255), 2);
+        cv::putText(img_1, cv::format("%.1f cm", length), cv::Point(stand_bar_x+30, stand_bar_y), cv::FONT_HERSHEY_COMPLEX, 2, cv::Scalar(255, 255, 255), 2);
 
     }
 
@@ -378,7 +365,9 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
             p3.y = stand_bar_y;
 
         }
-        double length = (stand_bar_x - p3.x) * mm_pre_x / 10;
+
+
+       double length = (stand_bar_x - p3.x) * mm_pre_x;
 
 
         cv::line(img_2, cv::Point(p1.x - pianyi, p1.y), cv::Point(p2.x - pianyi, p2.y), cv::Scalar(0, 255, 0), 3);
@@ -387,7 +376,7 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
         cv::circle(img_2, p3, 2, cv::Scalar(215, 45, 25), 8);
         cv::line(img_2, p3, stand_bar_p, cv::Scalar(0, 0, 255), 3);
 
-        cv::putText(img_2, cv::format("%.2f cm", length), cv::Point(500, stand_bar_y), cv::FONT_HERSHEY_COMPLEX, 2, cv::Scalar(0, 0, 255), 2);
+        cv::putText(img_2, cv::format("%.1f cm", length), cv::Point(stand_bar_x+30, stand_bar_y), cv::FONT_HERSHEY_COMPLEX, 2, cv::Scalar(255, 255, 255), 2);
     }
 
 
@@ -440,9 +429,9 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
             p4.y = stand_bar_y;
 
         }
+ 
 
-
-        double length = (stand_bar_x - p3.x) * mm_pre_x / 10;
+        double length = (stand_bar_x - p3.x)* mm_pre_x ;
 
         cv::line(img_2, cv::Point(p2_1.x - pianyi, p1.y), cv::Point(X - pianyi, p2.y), cv::Scalar(0, 255, 0), 3);
         cv::line(img_2, cv::Point(p2_1.x + pianyi, p1.y), cv::Point(X + pianyi, p2.y), cv::Scalar(0, 255, 0), 3);
@@ -450,7 +439,7 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
         cv::circle(img_2, p4, 2, cv::Scalar(215, 45, 25), 8);
         cv::line(img_2, p4, stand_bar_p, cv::Scalar(0, 0, 255), 3);
 
-        cv::putText(img_2, cv::format("%.2f cm", length), cv::Point(500, stand_bar_y), cv::FONT_HERSHEY_COMPLEX, 2, cv::Scalar(0, 0, 255), 2);
+        cv::putText(img_2, cv::format("%.1f cm", length), cv::Point(stand_bar_x+30, stand_bar_y), cv::FONT_HERSHEY_COMPLEX, 2, cv::Scalar(255, 255, 255), 2);
     }
 
 
@@ -464,13 +453,13 @@ cv::Mat  FindLane::get_img_mask(cv::Mat& img_1, cv::Mat& img_2) {
 };
 
 
-std::map<std::string, std::string> FindLane::readConfig(){
+void FindLane::readConfig(){
 
     std::ifstream configFile(config_path); 
-    std::map<std::string, std::string> config_mp;
+
     if (!configFile.is_open()) {
         std::cerr << "Error opening the config file." << std::endl;
-        return config_mp;
+        return ;
     }
 
     
@@ -503,8 +492,7 @@ std::map<std::string, std::string> FindLane::readConfig(){
     stand_bar_y = std::stoi(config_mp["y"]);
     stand_bar_p.x = stand_bar_x;
     stand_bar_p.y = stand_bar_y;
-
-
-    return config_mp;
+    mm_pre_x = std::stod(config_mp["mm_pre_x"]);
+    CONF_THRESHOLD = std::stof(config_mp["confidence"]);
 
 }

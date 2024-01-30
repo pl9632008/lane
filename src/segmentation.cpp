@@ -250,7 +250,7 @@ cv::Mat Segmentation::doInference_det(cv::Mat& org_img) {
 
     qsort_descent_inplace(objects);
     std::vector<int> picked;
-    nms_sorted_bboxes(objects, picked, 0.7);
+    nms_sorted_bboxes(objects, picked, 0.6);
     int count = picked.size();
 
     std::vector<Object>obj_out(count);
@@ -264,7 +264,7 @@ cv::Mat Segmentation::doInference_det(cv::Mat& org_img) {
  /*       fprintf(stderr, "%d = %.5f at %.2f %.2f %.2f x %.2f\n", obj.label, obj.prob,
             obj.rect.x, obj.rect.y, obj.rect.width, obj.rect.height);*/
 
-        cv::rectangle(org_img, obj.rect, cv::Scalar(255, 0, 0));
+        cv::rectangle(org_img, obj.rect, cv::Scalar(255, 0, 0),3);
 
       /*  char text[256];
         sprintf(text, "%s %.1f%%", class_names[obj.label], obj.prob * 100);

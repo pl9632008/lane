@@ -14,16 +14,19 @@ public:
 
     ExtractOut extract_color_lanes(cv::Mat& img);
     cv::Mat get_img_mask(cv::Mat& img_1, cv::Mat& img_2);
-    std::map<std::string, std::string> readConfig();
+    void readConfig();
+
+    std::map<std::string, std::string> config_mp;
+
 
     std::string config_path = "/home/nvidia/customlane/config.txt";
     
     //const cv::Size cam_size = cv::Size(1920, 1080);
-    const cv::Size cam_size = cv::Size(1280, 720) ;
-    const double sca_1 = 640.0 / cam_size.width;
-    const double sca_2 = sca_1;
-    const double mm_pre_x = 15.0 / 23.0 / sca_1;
-    const double mm_pre_y = 15.0 / 23.0 / sca_1;
+    cv::Size cam_size = cv::Size(1280, 720) ;
+    double sca_1 = 640.0 / cam_size.width;
+    double sca_2 = sca_1;
+    double mm_pre_x = 0.206896; //每个像素对应实际的距离cm
+    double mm_pre_y = 15.0 / 23.0 / sca_1;
 
     int stand_bar_x = 450;
     //int stand_bar_x = 470;

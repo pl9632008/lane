@@ -45,6 +45,7 @@ public:
     void qsort_descent_inplace(std::vector<Object>& faceobjects);
     float intersection_area(Object& a, Object& b);
     void nms_sorted_bboxes(std::vector<Object>& faceobjects, std::vector<int>& picked, float nms_threshold);
+    float CONF_THRESHOLD = 0.52;
 
 private:
     Logger logger_;
@@ -70,9 +71,7 @@ private:
     const char* output0_ = "output0";
     const char* output1_ = "output1";
 
-    float CONF_THRESHOLD = 0.5;
-
-
+   
 
     IRuntime* runtime_det = nullptr;
     ICudaEngine* engine_det = nullptr;

@@ -1,0 +1,8 @@
+rtsp_1 = rtsp://admin:admin@192.168.1.188/0
+rtsp_2 = 0
+rtsp_4 = rtsp://admin:admin@192.168.1.170/0
+rtsp_3 = rtsp://admin:admin@192.168.1.150/0
+x = 325
+y = 180
+mode = release
+mm_pre_x = 0.206896
